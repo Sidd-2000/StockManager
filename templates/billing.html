@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+      <div class="col">
+        <form method="post" action="/billing">
+        <h1>Manage Billing</h1>
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Name of customer</label>
+            <input type="text" class="form-control" name='cname' id="exampleFormControlInput1" placeholder="Name of customer" required>
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Medicin Name</label>
+            <input type="text" class="form-control" name='medname' id="exampleFormControlInput1" placeholder="Medicin Name" required>
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Enter quantity</label>
+            <input type="text" class="form-control" name='quantity' id="exampleFormControlInput1" placeholder="Enter quantity"required >
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Enter price of one</label>
+            <input type="text" class="form-control"  name='price' id="exampleFormControlInput1" placeholder="Enter price of one" name='price' required>
+        </div>
+        <button type="submit" class="btn btn-outline-primary">Add</button>
+      </div>
+    </form>
+      <div class="col-8">
+        <form class="d-flex mt-3" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+          <div>
+            <div style='overflow:scroll; width:850px;height:600px;'>
+            <form method="post">
+            <table class="table" id="medicineTable">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th scope="col">Sr.No</th>
+                    <th scope="col">Medicin Name</th>
+                    <th scope="col">Date of Purchase</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Cost of one</th>
+                    <th scope="col">Expiry Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if all_data %}
+                  {% for med_details in all_data %}
+                  <tr>
+                    <td><input type="checkbox" name="selected_rows" value="{{ loop.index0 }}"></td>
+                    <th scope="row">{{ loop.index0 + 1 }}</th>
+                    <td>{{ med_details['medname'] }}</td>
+                    <td>{{ med_details['Pdate'] }}</td>
+                    <td>{{ med_details['quantity'] }}</td>
+                    <td>{{ med_details['price'] }}</td>
+                    <td>{{ med_details['expiry'] }}</td>
+                  </tr>
+                  {% endfor %}
+                  {% endif %}
+                </tbody>
+              </table>
+              <button type="submit" formaction="{{ url_for('deletebill') }}" class="btn btn-outline-danger" {% if not all_data %}style="display:none"{% endif %}>Delete</button>
+              <button type="submit" formaction="{{ url_for('generatebill') }}" class="btn btn-outline-warning" {% if not all_data %}style="display:none"{% endif %}>Generate Bill</button>
+            </form>
+            </div>
+          </div>
+      </div>
+{% endblock body %}

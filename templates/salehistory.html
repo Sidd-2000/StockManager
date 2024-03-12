@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block body %}
+
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-8">
+        <form class="d-flex mt-3" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+          <div>
+            <div style='overflow:scroll; width:100vw;height:600px;'>
+            <table class="table">
+
+                <thead>
+                  <tr>
+                    <th scope="col">Sr.No</th>
+                    <th scope="col">Medicin Name</th>
+                    <th scope="col">Date of Purchase</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Cost of one</th>
+                    <th scope="col">Expiry Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">2</th>
+                    <td>Jacob</td>
+                    <td>Thornton</td>
+                    <td>@fat</td>
+                    <td>Thornton</td>
+                    <td>@fat</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">3</th>
+                    <td >Larry the Bird</td>
+                    <td>@twitter</td>
+                    <td >Larry the Bird</td>
+                    <td>@twitter</td>
+                    <td>@twitter</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+      </div>
+
+
+
+{% endblock body %}
