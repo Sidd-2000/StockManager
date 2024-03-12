@@ -1,15 +1,36 @@
-from flask import Flask, render_template, request, send_file
+from functools import wraps
+from flask import Flask, redirect, render_template, request, send_file, session, url_for
 import pandas as pd
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_keysiddharth210835mulund.ac.in'
 
+def authenticate(username, password):
+    # Example authentication logic - replace this with your actual authentication logic
+    return username == 'ganesh@2020' and password == 'P@ssword'
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'logged_in' not in session:
+            return redirect(url_for('login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route("/")
 def hello_world():
-    return render_template('adminpanel.html')
+    return render_template('login.html')
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if authenticate(username, password):
+            session['logged_in'] = True
+            return render_template('adminpanel.html')
+        else:
+            return render_template('login.html', error='Invalid username or password')
     return render_template('login.html')
 
 @app.route('/purchase',methods=['GET','POST'])
@@ -94,36 +115,49 @@ def deletebill():
 
 @app.route('/stock')
 def stock():
-    pdf = pd.read_excel('Book1.xlsx')
-    sdf = pd.read_excel('sales.xlsx')
-    ptotals = pdf.groupby('medname')['quantity'].sum().reset_index()
-    stotals = pdf.groupby('medname')['quantity'].sum().reset_index()
-
-    # Merge purchase and sales totals
-    merged_df = pd.merge(ptotals, stotals, on='medname', how='outer').fillna(0)
-    merged_df['Total Stock'] = merged_df['quantity_x'] - merged_df['quantity_y']
-    merged_df[['medname', 'Total Stock']].to_excel('stock.xlsx', index=False)
-    print(merged_df)
-    return render_template('stock.html')
+    purchase_df = pd.read_excel('Book1.xlsx')
+    sales_df = pd.read_excel('sales.xlsx')
+    purchase_totals = purchase_df.groupby('medname')['quantity'].sum().reset_index()
+    sales_totals = sales_df.groupby('medname')['quantity'].sum().reset_index()
+    merged_df = pd.merge(purchase_totals, sales_totals, on='medname', how='outer').fillna(0)
+    merged_df['Total Count'] = merged_df['quantity_x'] - merged_df['quantity_y']
+    merged_df.rename(columns={'medname': 'Medicine', 'quantity_x': 'Purchased quantity', 'quantity_y': 'Saled quantity'}, inplace=True)
+    merged_df.to_excel('stock.xlsx', index=False)
+    stock_data = merged_df.to_dict(orient='records')
+    return render_template('stock.html',stock_data=stock_data)
 
 
 @app.route('/salehistory')
 def salehis():
-    return render_template('salehistory.html')
+    df = pd.read_excel('sales.xlsx')
+    sales_data = df.to_dict(orient='records')
+    return render_template('salehistory.html',sales_data=sales_data)
+
+@app.route('/search_sales', methods=['GET'])
+def search_sales():
+    sales_data = pd.read_excel('sales.xlsx')
+    query = request.args.get('query')
+    filtered_sales_data = []
+    for med_details in sales_data:
+        if isinstance(med_details, dict) and 'customer_name' in med_details and 'medname' in med_details:
+            if query.lower() in med_details['customer_name'].lower() or query.lower() in med_details['medname'].lower():
+                filtered_sales_data.append(med_details)
+    return render_template('salehistory.html', sales_data=filtered_sales_data)
 
 
-@app.route('/wholesalers')
-def wholesalers():
-    return render_template('wholesalers.html')
-@app.route('/register')
-def register():
-    return render_template('register.html')
-@app.route('/changepass')
-def change():
-    return render_template('changepass.html')
+# @app.route('/wholesalers')
+# def wholesalers():
+#     return render_template('wholesalers.html')
+# @app.route('/register')
+# def register():
+#     return render_template('register.html')
+# @app.route('/changepass')
+# def change():
+#     return render_template('changepass.html')
 @app.route('/logout')
 def logout():
-    return render_template('logout.html')
+    session.pop('logged_in', None)
+    return redirect(url_for('login'))
 
 
 if __name__ == '__main__':

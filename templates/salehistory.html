@@ -4,8 +4,8 @@
 <div class="container-fluid">
     <div class="row">
       <div class="col-8">
-        <form class="d-flex mt-3" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <form class="d-flex mt-3" method="GET" action="{{ url_for('search_sales') }}" role="search">
+            <input class="form-control me-2" name='query' type="search" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-success" type="submit">Search</button>
           </form>
           <div>
@@ -15,38 +15,26 @@
                 <thead>
                   <tr>
                     <th scope="col">Sr.No</th>
+                    <th scope="col">Customer Name</th>
                     <th scope="col">Medicin Name</th>
                     <th scope="col">Date of Purchase</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Cost of one</th>
-                    <th scope="col">Expiry Date</th>
                   </tr>
                 </thead>
                 <tbody>
+                  {% if sales_data %}
+                  {% for med_details in sales_data %}
                   <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
+                    <td><input type="checkbox" name="selected_rows" value="{{ loop.index0 }}"></td>
+                    <th scope="row">{{ loop.index0 + 1 }}</th>
+                    <td>{{ med_details['customer_name'] }}</td>
+                    <td>{{ med_details['medname'] }}</td>
+                    <td>{{ med_details['quantity'] }}</td>
+                    <td>{{ med_details['price'] }}</td>
                   </tr>
-                  <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">3</th>
-                    <td >Larry the Bird</td>
-                    <td>@twitter</td>
-                    <td >Larry the Bird</td>
-                    <td>@twitter</td>
-                    <td>@twitter</td>
-                  </tr>
+                  {% endfor %}
+                  {% endif %}
                 </tbody>
               </table>
             </div>
