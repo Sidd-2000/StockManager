@@ -28,16 +28,22 @@ def login():
         password = request.form.get('password')
         if authenticate(username, password):
             session['logged_in'] = True
-            return render_template('adminpanel.html')
+            return redirect(url_for('adminpanel'))
         else:
             return render_template('login.html', error='Invalid username or password')
     return render_template('login.html')
 
+@app.route('/adminpanel')
+@login_required
+def adminpanel():
+    return render_template('adminpanel.html')
+
 @app.route('/purchase',methods=['GET','POST'])
+@login_required
 def purchase():
     df = pd.read_excel('Book1.xlsx')
-    medicine_list = []
     if request.method == 'POST':
+        medicine_list = []
         medicin_name = request.form.get('medname')
         Pdate = request.form.get('Pdate')
         quantity = request.form.get('quantity')
@@ -57,7 +63,7 @@ def purchase():
         df = df._append(medicine_list, ignore_index=True)
         df.to_excel('Book1.xlsx', index=False)
         all_data = df.to_dict(orient='records')
-        return render_template('purchase.html',all_data=all_data)
+        return redirect(url_for('purchase',all_data=all_data))
     else:
         df = pd.read_excel('Book1.xlsx')
         all_data = df.to_dict(orient='records')
@@ -75,6 +81,7 @@ def update():
 
 medicine_list = []
 @app.route('/billing',methods=['GET', 'POST'])
+@login_required
 def billing():
     if request.method == 'POST':
         cname = request.form.get('cname')
@@ -114,6 +121,7 @@ def deletebill():
     return render_template('billing.html', all_data=medicine_list)
 
 @app.route('/stock')
+@login_required
 def stock():
     purchase_df = pd.read_excel('Book1.xlsx')
     sales_df = pd.read_excel('sales.xlsx')
@@ -128,6 +136,7 @@ def stock():
 
 
 @app.route('/salehistory')
+@login_required
 def salehis():
     df = pd.read_excel('sales.xlsx')
     sales_data = df.to_dict(orient='records')
