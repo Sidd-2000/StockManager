@@ -41,7 +41,9 @@ def adminpanel():
 @app.route('/purchase',methods=['GET','POST'])
 @login_required
 def purchase():
-    df = pd.read_excel('Book1.xlsx')
+    df = pd.read_excel('purchase.xlsx')
+    medicine_names = df['medname'].unique().tolist()
+    df = pd.read_excel('purchase.xlsx')
     if request.method == 'POST':
         medicine_list = []
         medicin_name = request.form.get('medname')
@@ -57,32 +59,54 @@ def purchase():
             'expiry': expiry
         })
         try:
-            df = pd.read_excel('Book1.xlsx')
+            df = pd.read_excel('purchase.xlsx')
         except FileNotFoundError:
             df = pd.DataFrame()
         df = df._append(medicine_list, ignore_index=True)
-        df.to_excel('Book1.xlsx', index=False)
+        df.to_excel('purchase.xlsx', index=False)
         all_data = df.to_dict(orient='records')
-        return redirect(url_for('purchase',all_data=all_data))
+        return redirect(url_for('purchase',all_data=all_data,medname=medicine_names))
     else:
-        df = pd.read_excel('Book1.xlsx')
+        df = pd.read_excel('purchase.xlsx')
         all_data = df.to_dict(orient='records')
-        return render_template('purchase.html',all_data=all_data)
+        return render_template('purchase.html',all_data=all_data , medname=medicine_names)
 
+@app.route('/PSearch',methods=['POST'])
+def PSearch():
+    df = pd.read_excel('purchase.xlsx')
+    name = request.form.get('PSearch')
+    filtered_purchases = df[df['medname'] == name]
+    medname = filtered_purchases.to_dict(orient='records')
+    print('searched medname ',medname)
+    return render_template('purchase.html',all_data = medname)
+
+@app.route('/SSearch',methods=['POST'])
+def SSearch():
+    df = pd.read_excel('stock.xlsx')
+    name = request.form.get('SSearch')
+    filtered_purchases = df[df['Medicine'] == name]
+    print(filtered_purchases)
+    medname = filtered_purchases.to_dict(orient='records')
+    print('searched medname ',medname)
+    return render_template('stock.html',medname = medname)
 @app.route('/delete', methods=['POST'])
 def update():
-    df = pd.read_excel('Book1.xlsx')
+    df = pd.read_excel('purchase.xlsx')
     selected_rows = request.form.getlist('selected_rows')
     selected_rows = [int(index) for index in selected_rows]
     # Delete the selected row(s) from the DataFrame
     df = df.drop(index=selected_rows).reset_index(drop=True)
-    df.to_excel('Book1.xlsx', index=False)
+    df.to_excel('purchase.xlsx', index=False)
     return render_template('purchase.html', all_data=df.to_dict(orient='records'))
 
 medicine_list = []
 @app.route('/billing',methods=['GET', 'POST'])
 @login_required
 def billing():
+    df = pd.read_excel('purchase.xlsx')
+    df.fillna(0, inplace=True)
+    df.to_excel('purchase.xlsx', index=False)
+    medicine_names = df['medname'].unique().tolist()
     if request.method == 'POST':
         cname = request.form.get('cname')
         medicin_name = request.form.get('medname')
@@ -95,9 +119,9 @@ def billing():
             'price': price,
         })
         
-        return render_template('billing.html',all_data=medicine_list)
+        return render_template('billing.html',all_data=medicine_list,medname=medicine_names)
     else:
-        return render_template('billing.html')
+        return render_template('billing.html',medname=medicine_names)
 
 @app.route('/generatebill',methods=['GET','POST'])
 def generatebill():
@@ -123,7 +147,7 @@ def deletebill():
 @app.route('/stock')
 @login_required
 def stock():
-    purchase_df = pd.read_excel('Book1.xlsx')
+    purchase_df = pd.read_excel('purchase.xlsx')
     sales_df = pd.read_excel('sales.xlsx')
     purchase_totals = purchase_df.groupby('medname')['quantity'].sum().reset_index()
     sales_totals = sales_df.groupby('medname')['quantity'].sum().reset_index()

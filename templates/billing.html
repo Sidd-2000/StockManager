@@ -1,70 +1,181 @@
-{% extends 'base.html' %}
-{% block body %}
+{% extends 'base.html' %} {% block body %}
 <div class="container-fluid">
-    <div class="row">
-      <div class="col">
-        <form method="post" action="/billing">
+  <div class="row">
+    <div class="col">
+      <form method="post" action="/billing">
         <h1>Manage Billing</h1>
         <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Name of customer</label>
-            <input type="text" class="form-control" name='cname' id="exampleFormControlInput1" placeholder="Name of customer" required>
+          <label for="exampleFormControlInput1" class="form-label"
+            >Name of customer</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="cname"
+            id="exampleFormControlInput1"
+            placeholder="Name of customer"
+          />
         </div>
         <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Medicin Name</label>
-            <input type="text" class="form-control" name='medname' id="exampleFormControlInput1" placeholder="Medicin Name" required>
+          <label for="input-box" class="form-label">Medicin Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="input-box"
+            name="medname"
+            placeholder="Medicin Name"
+            required
+          />
+          <div class="result-box1"></div>
         </div>
         <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Enter quantity</label>
-            <input type="number" class="form-control" name='quantity' id="exampleFormControlInput1" placeholder="Enter quantity"required >
+          <label for="exampleFormControlInput1" class="form-label"
+            >Enter quantity</label
+          >
+          <input
+            type="number"
+            class="form-control"
+            name="quantity"
+            placeholder="Enter quantity"
+            required
+          />
         </div>
         <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Enter price of one</label>
-            <input type="number" class="form-control"  name='price' id="exampleFormControlInput1" placeholder="Enter price of one" name='price' required>
+          <label for="exampleFormControlInput1" class="form-label"
+            >Enter price of one</label
+          >
+          <input
+            type="number"
+            class="form-control"
+            name="price"
+            placeholder="Enter price of one"
+            name="price"
+            required
+          />
         </div>
         <button type="submit" class="btn btn-outline-primary">Add</button>
-        <a href='/adminpanel'><button type="button" class="btn btn-outline-warning">Admin page</button></a>
-      </div>
-    </form>
-      <div class="col-8">
-        <form class="d-flex mt-3" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
-          </form>
-          <div>
-            <div style='overflow:scroll; width:850px;height:600px;'>
-            <form method="post">
+        <a href="/adminpanel"
+          ><button type="button" class="btn btn-outline-warning">
+            Admin page
+          </button></a
+        >
+      </form>
+    </div>
+    <div class="col-8">
+      <div>
+        <div style="overflow: scroll; width: 850px; height: 600px">
+          <form method="post">
             <table class="table" id="medicineTable">
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th scope="col">Sr.No</th>
-                    <th scope="col">Medicin Name</th>
-                    <th scope="col">Date of Purchase</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Cost of one</th>
-                    <th scope="col">Expiry Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% if all_data %}
-                  {% for med_details in all_data %}
-                  <tr>
-                    <td><input type="checkbox" name="selected_rows" value="{{ loop.index0 }}"></td>
-                    <th scope="row">{{ loop.index0 + 1 }}</th>
-                    <td>{{ med_details['medname'] }}</td>
-                    <td>{{ med_details['Pdate'] }}</td>
-                    <td>{{ med_details['quantity'] }}</td>
-                    <td>{{ med_details['price'] }}</td>
-                    <td>{{ med_details['expiry'] }}</td>
-                  </tr>
-                  {% endfor %}
-                  {% endif %}
-                </tbody>
-              </table>
-              <button type="submit" formaction="{{ url_for('deletebill') }}" class="btn btn-outline-danger" {% if not all_data %}style="display:none"{% endif %}>Delete</button>
-              <button type="submit" formaction="{{ url_for('generatebill') }}" class="btn btn-outline-warning" {% if not all_data %}style="display:none"{% endif %}>Generate Bill</button>
-            </form>
-            </div>
-          </div>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th scope="col">Sr.No</th>
+                  <th scope="col">Medicin Name</th>
+                  <th scope="col">Date of Purchase</th>
+                  <th scope="col">Quantity</th>
+                  <th scope="col">Cost of one</th>
+                  <th scope="col">Expiry Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if all_data %} {% for med_details in all_data %}
+                <tr>
+                  <td>
+                    <input
+                      type="checkbox"
+                      name="selected_rows"
+                      value="{{ loop.index0 }}"
+                    />
+                  </td>
+                  <th scope="row">{{ loop.index0 + 1 }}</th>
+                  <td>{{ med_details['medname'] }}</td>
+                  <td>{{ med_details['Pdate'] }}</td>
+                  <td>{{ med_details['quantity'] }}</td>
+                  <td>{{ med_details['price'] }}</td>
+                  <td>{{ med_details['expiry'] }}</td>
+                </tr>
+                {% endfor %} {% endif %}
+              </tbody>
+            </table>
+            <button
+              type="submit"
+              formaction="{{ url_for('deletebill') }}"
+              class="btn btn-outline-danger"
+              {%
+              if
+              not
+              all_data
+              %}style="display:none"
+              {%
+              endif
+              %}
+            >
+              Delete
+            </button>
+            <button
+              type="submit"
+              formaction="{{ url_for('generatebill') }}"
+              class="btn btn-outline-warning"
+              {%
+              if
+              not
+              all_data
+              %}style="display:none"
+              {%
+              endif
+              %}
+            >
+              Generate Bill
+            </button>
+          </form>
+        </div>
       </div>
-{% endblock body %}
+    </div>
+    <script>
+    // Function to initialize availableKeywords
+    function initializeAvailableKeywords() {
+        availableKeywords = {{medname | safe }}
+        console.log('availableKeywords',availableKeywords);
+    }
+    initializeAvailableKeywords();
+
+    const resultbox = document.querySelector(".result-box1");
+    const inputBox = document.querySelector("#input-box");
+
+    // Function to handle input keyup event
+    inputBox.onkeyup = function () {
+        let result = [];
+        let input = inputBox.value;
+        console.log(input);
+        if (input.length) {
+            result = availableKeywords.filter((keyword) => {
+                return keyword.toString().toLowerCase().includes(input.toLowerCase());
+            });
+            console.log(result);
+        }
+        display(result);
+        if (!result.length) {
+            resultbox.innerHTML = '';
+        }
+    };
+
+    // Function to display filtered keywords
+    function display(result) {
+        const content = result.map((list) => {
+            return "<li onclick=selectinput(this)>" + list + "</li>";
+        });
+        resultbox.innerHTML = "<ul>" + content.join("") + "</ul>";
+    }
+
+    // Function to select input
+    function selectinput(list) {
+    console.log("Selected list item: ", list.innerHTML);
+    inputBox.value = list.innerHTML;
+    resultbox.innerHTML = '';
+    inputBox.dispatchEvent(new Event('keyup'));
+    resultbox.innerHTML = '';
+}
+    </script>
+    {% endblock body %}
+  </div>
+</div>

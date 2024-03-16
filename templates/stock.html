@@ -10,9 +10,10 @@
         <a href='/adminpanel'><button type="button" class="btn btn-outline-warning">Admin page</button></a>
       </div>
       <div class="col-8">
-        <form class="d-flex mt-3" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
+        <form class="d-flex flex-column mt-3" role="search" method="post" action="/SSearch">
+            <input class="form-control me-2" id="input-box" name="SSearch" type="search" placeholder="Search" aria-label="Search">
+            <div class="result-box2 mt-2"></div>
+            <button class="btn btn-outline-success align-self-start" type="submit">Search</button>
           </form>
           <div style='overflow:scroll; width:850px;height:600px;'>
                 <table class="table">
@@ -43,7 +44,48 @@
                 </table>
           </div>
       </div>
+      <script>
 
+    function initializeAvailableKeywords() {
+        availableKeywords = {{medname | safe }}
+        console.log('availableKeywords',availableKeywords);
+    }
+    initializeAvailableKeywords();
+    const resultbox = document.querySelector(".result-box2");
+    const inputBox = document.querySelector("#input-box");
+    inputBox.onkeyup = function () {
+        let result = [];
+        let input = inputBox.value;
+        console.log(input);
+        if (input.length) {
+            result = availableKeywords.filter((keyword) => {
+                return keyword.toString().toLowerCase().includes(input.toLowerCase());
+            });
+            console.log(result);
+        }
+        display(result);
+        if (!result.length) {
+            resultbox.innerHTML = '';
+        }
+    };
+
+    // Function to display filtered keywords
+    function display(result) {
+        const content = result.map((list) => {
+            return "<li onclick=selectinput(this)>" + list + "</li>";
+        });
+        resultbox.innerHTML = "<ul>" + content.join("") + "</ul>";
+    }
+
+    // Function to select input
+    function selectinput(list) {
+    console.log("Selected list item: ", list.innerHTML);
+    inputBox.value = list.innerHTML;
+    resultbox.innerHTML = '';
+    inputBox.dispatchEvent(new Event('keyup'));
+    resultbox.innerHTML = '';
+}
+    </script>
 
 
 {% endblock body %}

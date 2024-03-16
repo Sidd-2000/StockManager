@@ -7,32 +7,33 @@
         <h1>Manage purchses</h1>
         <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">Medicin Name</label>
-            <input type="text" class="form-control" name='medname' id="exampleFormControlInput1" placeholder="Medicin Name" required >
+            <input type="text" class="form-control" name='medname' id="exampleFormControlInput1" placeholder="Medicin Name" autocomplete="off" required >
         </div>
         <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Date of Purchase</label>
-            <input type="date" class="form-control" name='Pdate' id="exampleFormControlInput1" placeholder="Date of Purchase" required >
+            <label for="exampleFormControlInput2" class="form-label">Date of Purchase</label>
+            <input type="date" class="form-control" name='Pdate' id="exampleFormControlInput2" placeholder="Date of Purchase" required >
         </div>
         <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Enter quantity</label>
-            <input type="number" class="form-control" name='quantity' id="exampleFormControlInput1" placeholder="Enter quantity" required >
+            <label for="exampleFormControlInput3" class="form-label">Enter quantity</label>
+            <input type="number" class="form-control" name='quantity' id="exampleFormControlInput3" placeholder="Enter quantity" required >
         </div>
         <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Enter price of one</label>
-            <input type="number" class="form-control"  name='price' id="exampleFormControlInput1" placeholder="Enter price of one" name='price' required>
+            <label for="exampleFormControlInput4" class="form-label">Enter price of one</label>
+            <input type="number" class="form-control"  name='price' id="exampleFormControlInput4" placeholder="Enter price of one" name='price' required>
         </div>
         <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Enter expiry date</label>
-            <input type="date" class="form-control" name='expiry' id="exampleFormControlInput1" placeholder="Enter expiry date"required >
+            <label for="exampleFormControlInput5" class="form-label">Enter expiry date</label>
+            <input type="date" class="form-control" name='expiry' id="exampleFormControlInput5" placeholder="Enter expiry date"required >
         </div>
         <button type="submit" class="btn btn-outline-primary">Add</button>
         <a href='/adminpanel'><button type="button" class="btn btn-outline-warning">Admin page</button></a>
-      </div>
     </form>
+          </div>
       <div class="col-8">
-        <form class="d-flex mt-3" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
+        <form class="d-flex flex-column mt-3" role="search" method="post" action="/PSearch">
+            <input class="form-control me-2" id="input-box" name="PSearch" type="search" placeholder="Search" aria-label="Search">
+            <div class="result-box2 mt-2"></div>
+            <button class="btn btn-outline-success align-self-start" type="submit">Search</button>
           </form>
           <div>
             <div style='overflow:scroll; width:850px;height:600px;'>
@@ -70,4 +71,46 @@
             </div>
           </div>
       </div>
+      <script>
+
+    function initializeAvailableKeywords() {
+        availableKeywords = {{medname | safe }}
+        console.log('availableKeywords',availableKeywords);
+    }
+    initializeAvailableKeywords();
+    const resultbox = document.querySelector(".result-box2");
+    const inputBox = document.querySelector("#input-box");
+    inputBox.onkeyup = function () {
+        let result = [];
+        let input = inputBox.value;
+        console.log(input);
+        if (input.length) {
+            result = availableKeywords.filter((keyword) => {
+                return keyword.toString().toLowerCase().includes(input.toLowerCase());
+            });
+            console.log(result);
+        }
+        display(result);
+        if (!result.length) {
+            resultbox.innerHTML = '';
+        }
+    };
+
+    // Function to display filtered keywords
+    function display(result) {
+        const content = result.map((list) => {
+            return "<li onclick=selectinput(this)>" + list + "</li>";
+        });
+        resultbox.innerHTML = "<ul>" + content.join("") + "</ul>";
+    }
+
+    // Function to select input
+    function selectinput(list) {
+    console.log("Selected list item: ", list.innerHTML);
+    inputBox.value = list.innerHTML;
+    resultbox.innerHTML = '';
+    inputBox.dispatchEvent(new Event('keyup'));
+    resultbox.innerHTML = '';
+}
+    </script>
 {% endblock body %}
