@@ -6,9 +6,16 @@
         <form method="post" action="/purchase">
         <h1>Manage purchses</h1>
         <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Medicin Name</label>
-            <input type="text" class="form-control" name='medname' id="exampleFormControlInput1" placeholder="Medicin Name" autocomplete="off" required >
-        </div>
+          <label for="input-box" class="form-label">Medicin Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="input-box"
+            name="medname"
+            placeholder="Medicin Name"
+            required
+          />
+          <div class="result-box1"></div>
         <div class="mb-3">
             <label for="exampleFormControlInput2" class="form-label">Date of Purchase</label>
             <input type="date" class="form-control" name='Pdate' id="exampleFormControlInput2" placeholder="Date of Purchase" required >
@@ -27,15 +34,9 @@
         </div>
         <button type="submit" class="btn btn-outline-primary">Add</button>
         <a href='/adminpanel'><button type="button" class="btn btn-outline-warning">Admin page</button></a>
-    </form>
+    </div>
+        </form>
           </div>
-      <div class="col-8">
-        <form class="d-flex flex-column mt-3" role="search" method="post" action="/PSearch">
-            <input class="form-control me-2" id="input-box" name="PSearch" type="search" placeholder="Search" aria-label="Search">
-            <div class="result-box2 mt-2"></div>
-            <button class="btn btn-outline-success align-self-start" type="submit">Search</button>
-          </form>
-          <div>
             <div style='overflow:scroll; width:850px;height:600px;'>
             <form method="post" action="/delete">
             <table class="table" id="medicineTable">
@@ -78,7 +79,7 @@
         console.log('availableKeywords',availableKeywords);
     }
     initializeAvailableKeywords();
-    const resultbox = document.querySelector(".result-box2");
+    const resultbox = document.querySelector(".result-box1");
     const inputBox = document.querySelector("#input-box");
     inputBox.onkeyup = function () {
         let result = [];

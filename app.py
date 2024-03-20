@@ -88,7 +88,9 @@ def SSearch():
     print(filtered_purchases)
     medname = filtered_purchases.to_dict(orient='records')
     print('searched medname ',medname)
-    return render_template('stock.html',medname = medname)
+    return render_template('stock.html',stock_data = medname)
+
+
 @app.route('/delete', methods=['POST'])
 def update():
     df = pd.read_excel('purchase.xlsx')
@@ -148,6 +150,7 @@ def deletebill():
 @login_required
 def stock():
     purchase_df = pd.read_excel('purchase.xlsx')
+    medicine_names = purchase_df['medname'].unique().tolist()
     sales_df = pd.read_excel('sales.xlsx')
     purchase_totals = purchase_df.groupby('medname')['quantity'].sum().reset_index()
     sales_totals = sales_df.groupby('medname')['quantity'].sum().reset_index()
@@ -156,7 +159,7 @@ def stock():
     merged_df.rename(columns={'medname': 'Medicine', 'quantity_x': 'Purchased quantity', 'quantity_y': 'Saled quantity'}, inplace=True)
     merged_df.to_excel('stock.xlsx', index=False)
     stock_data = merged_df.to_dict(orient='records')
-    return render_template('stock.html',stock_data=stock_data)
+    return render_template('stock.html',stock_data=stock_data,medname=medicine_names)
 
 
 @app.route('/salehistory')
